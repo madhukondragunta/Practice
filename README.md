@@ -34,6 +34,8 @@ cd practice
 
 ## Running with Docker Compose
 
+### Option 1: Running All Services Together
+
 1. Make sure Docker and Docker Compose are installed and running on your system.
 
 2. Build and start all services:
@@ -51,7 +53,27 @@ docker-compose up -d --build
 docker-compose down
 ```
 
+### Option 2: Running Kafka and Zookeeper Separately
+
+1. Start Kafka and Zookeeper services:
+```bash
+docker-compose -f kafka-zookeeper-docker-compose.yml up -d
+```
+
+2. Start the main application services:
+```bash
+docker-compose up -d
+```
+
+3. To stop all services:
+```bash
+docker-compose -f kafka-zookeeper-docker-compose.yml down
+docker-compose down
+```
+
 ## Running with Podman Compose
+
+### Option 1: Running All Services Together
 
 1. Make sure Podman and Podman Compose are installed on your system.
 
@@ -70,6 +92,24 @@ podman-compose up -d --build
 podman-compose down
 ```
 
+### Option 2: Running Kafka and Zookeeper Separately
+
+1. Start Kafka and Zookeeper services:
+```bash
+podman-compose -f kafka-zookeeper-docker-compose.yml up -d
+```
+
+2. Start the main application services:
+```bash
+podman-compose up -d
+```
+
+3. To stop all services:
+```bash
+podman-compose -f kafka-zookeeper-docker-compose.yml down
+podman-compose down
+```
+
 ## Accessing Services
 
 Once the services are running, you can access them at the following endpoints:
@@ -78,14 +118,18 @@ Once the services are running, you can access them at the following endpoints:
 - Redis Commander (Web UI): http://localhost:8081
 - RedisInsight: http://localhost:8001
 - MongoDB: localhost:27017
+- Kafka UI (AKHQ): http://localhost:8080
+- Kafka Broker: localhost:29092
+- Zookeeper: localhost:2181
 
 ## Environment Variables
 
 The application uses the following environment variables:
 - `SPRING_DATA_MONGODB_URI`: MongoDB connection string
 - `SPRING_REDIS_HOST`: Redis host address
+- `KAFKA_BOOTSTRAP_SERVERS`: Kafka broker address (default: localhost:29092)
 
-These are already configured in the docker-compose.yml file.
+These are already configured in the docker-compose.yml files.
 
 ## Volumes
 
@@ -93,9 +137,12 @@ The following persistent volumes are created:
 - `mongodb_data`: For MongoDB data persistence
 - `redis_data`: For Redis data persistence
 
-## Network
+## Networks
 
-All services are connected to a bridge network named `app-network`.
+The services are connected to the following networks:
+- `app-network`: For main application services
+- `kafka-local-net`: For Kafka and Zookeeper services
+- `trino-local-net`: For Trino and MongoDB services
 
 ## Development
 
