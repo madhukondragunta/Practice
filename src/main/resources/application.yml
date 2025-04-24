@@ -1,0 +1,41 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: products
+      authentication-database: admin
+      username: admin
+      password: admin123
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+  kafka:
+    topic:
+      name: TP.SPRING.TOPIC
+    listener:
+      ack-mode: RECORD
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: my-app-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.self.practice.dto.MessageDto
+  application:
+    name: practice
+  security:
+    user:
+      name: admin
+      password: admin
+      roles: ADMIN
+server:
+    port: 5050

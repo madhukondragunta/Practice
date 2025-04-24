@@ -1,0 +1,71 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+    networks:
+      - app-network
+  redis:
+    image: redis:latest
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    networks:
+      - app-network
+
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    container_name: redis-gui
+    ports:
+      - "8001:8001"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-cli-web
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+  practice-app:
+    build: .
+    image: practice-app
+    ports:
+      - "5050:5050"
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:admin123@mongodb:27017
+      - SPRING_REDIS_HOST=redis
+    networks:
+      - app-network
+volumes:
+  redis_data:
+  mongodb_data:
+networks:
+  app-network:
+    driver: bridge
