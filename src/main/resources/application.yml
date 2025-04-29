@@ -7,18 +7,15 @@ spring:
       authentication-database: admin
       username: admin
       password: admin123
-  redis:
-    image: redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+    redis:
+      host: redis-cache
+      port: 6379
   kafka:
     topic:
       name: TP.SPRING.TOPIC
     listener:
       ack-mode: RECORD
-    bootstrap-servers: localhost:29092
+    bootstrap-servers: kafka:29092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

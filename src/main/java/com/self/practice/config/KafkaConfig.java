@@ -10,6 +10,7 @@ import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.util.backoff.FixedBackOff;
 
+
 @Configuration
 @EnableKafka
 public class KafkaConfig {
